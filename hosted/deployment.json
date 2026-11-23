@@ -9,6 +9,8 @@
   "vercel_project_id": "prj_gHInpQdL1jrBiJcObQ5MfWjoHpjx",
   "vercel_url": "https://ya-casi-calendario.vercel.app",
   "vercel_team_id": "team_4K5mpf4QG9bF2UhFnYa15nEa",
-  "vercel_deployment_id": "dpl_8cgWPqdm7efmDq8NZfW3tptiFFxq",
-  "status": "protected_deployment_pending_database_secret_and_consent"
+  "vercel_deployment_id": "dpl_3SxVzHVHRKdWMMFqdFMYbDVttxGR",
+  "status": "live",
+  "backend": "supabase-edge-function",
+  "backend_url": "https://liknplywbiyfsdbrtmoa.supabase.co/functions/v1/calendar-api"
 }
