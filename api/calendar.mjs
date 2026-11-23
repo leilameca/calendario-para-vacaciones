@@ -12,7 +12,9 @@ export default async function handler(req,res){
     console.info('calendar_proxy_start',{path:new URL(path,host).pathname,method:req.method});
     const response=await fetch(backend+path,{method:req.method,headers,...(hasBody?{body:Buffer.concat(chunks)}:{}),redirect:'manual',signal:AbortSignal.timeout(25000)});
     console.info('calendar_proxy_response',{status:response.status});
-    const output={};for(const key of ['content-type','cache-control','set-cookie','referrer-policy','x-content-type-options','x-frame-options','x-robots-tag','content-security-policy'])if(response.headers.has(key))output[key]=response.headers.get(key);
+    const output={};for(const key of ['content-type','cache-control','referrer-policy','x-content-type-options','x-frame-options','x-robots-tag','content-security-policy'])if(response.headers.has(key))output[key]=response.headers.get(key);
+    const cookies=response.headers.getSetCookie().filter(cookie=>cookie.startsWith('ya_admin='));
+    if(cookies.length)output['set-cookie']=cookies;
     res.writeHead(response.status,output);res.end(Buffer.from(await response.arrayBuffer()));
   }catch(error){console.error('calendar_unavailable',{name:error.name});if(!res.headersSent){res.writeHead(503,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:'El calendario no está disponible. Inténtalo de nuevo.'}));}}
 }
