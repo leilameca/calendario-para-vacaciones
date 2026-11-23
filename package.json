@@ -11,8 +11,10 @@
     "dev": "node --watch server.mjs",
     "test": "node --test tests/*.test.mjs",
     "recover-admin": "node scripts/recover-admin.mjs",
-    "build": "node scripts/build-worker.mjs",
-    "build:vercel": "node scripts/build-vercel.mjs"
+    "build": "node scripts/build-vercel.mjs",
+    "build:vercel": "node scripts/build-vercel.mjs",
+    "build:worker": "node scripts/build-worker.mjs",
+    "build:supabase": "node scripts/build-supabase.mjs"
   },
   "dependencies": {
     "@cf-wasm/photon": "^0.4.0",

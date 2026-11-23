@@ -1,116 +1,77 @@
 # Ya casi · Cada día, más cerca
 
-Aplicación real de calendario navideño, preparada para empezar el **18 de noviembre de 2026**. Las pantallas del ZIP se usaron como referencia visual; el prototipo no se reutilizó como si fuera una aplicación conectada.
+Calendario navideño compartido para la oficina, desde el **18 de noviembre de 2026**. Interfaz original adaptada a móvil y escritorio, con estado real en servidor.
 
-## Abrir en esta computadora
+## Publicación
 
-Requiere **Node.js 24 o superior**. Las dependencias ya están instaladas en esta entrega.
+- Aplicación: https://ya-casi-calendario.vercel.app
+- Código: https://github.com/leilameca/calendario-para-vacaciones
+- Base: proyecto Supabase `ya-casi-calendario` en `PROYECTOS UNIVERSIDAD`, región `us-east-1`.
+- Vercel sirve la interfaz y una API de enlace. Supabase ejecuta las reglas y conserva el estado y las fotos privadas.
 
-1. Haz doble clic en **ABRIR_ADMIN.cmd** para abrir tu administración privada.
-2. En **Compañeros**, añade al menos dos personas. Las fotos son opcionales.
-3. Revisa **Fechas**. El inicio ya es el 18 de noviembre; la salida sigue siendo provisional.
-4. Abre **ABRIR_CALENDARIO.cmd** para ver la experiencia de participación.
+La raíz requiere un enlace de acceso. **El enlace de participación y el de administración no se incluyen en este repositorio.** La propietaria abre `.data/ABRIR_ADMIN_WEB.html` desde su computadora, añade al menos dos compañeros y usa «Copiar enlace para compañeros». Ese archivo privado permanece fuera de GitHub.
 
-Los accesos directos encienden el servidor local si hace falta. También puedes ejecutar `npm start` y abrir `http://127.0.0.1:3100`.
+El enlace de participación permite entrar sin cuenta. La administración usa otro enlace secreto, que se intercambia por una cookie HttpOnly y Secure y se elimina de la dirección. Quien tenga el enlace administrativo puede modificar el calendario; guárdalo en privado.
 
-**El enlace local funciona en esta computadora.** Para que otras personas entren desde sus celulares hace falta publicar el servidor en un alojamiento accesible por HTTPS. Copiar un enlace que empieza por `127.0.0.1` no lo convierte en un enlace de Internet.
+La publicación actual se subió directamente con Vercel. Este repositorio conserva el código fuente; aún no tiene despliegues continuos vinculados a cada push.
 
-## Fechas iniciales
+## Fechas iniciales editables
 
-| Campo | Valor editable |
+| Campo | Fecha |
 | --- | --- |
-| Primer día del calendario | 18 de noviembre de 2026 |
+| Inicio del calendario | 18 de noviembre de 2026 |
 | Último día que trabajamos | 14 de diciembre de 2026 |
 | Inicio de vacaciones | 15 de diciembre de 2026 |
 | Regreso previsto | 7 de enero de 2027 |
-| Zona horaria del servidor | America/Santo_Domingo |
+| Zona horaria | America/Santo_Domingo |
 
-Son **27 casillas: 19 laborables y 8 de fin de semana**, antes de configurar otros cierres o feriados. El 18 de noviembre faltan 27 días calendario para las vacaciones. Los turnos pendientes se cuentan por separado. No se precargaron personas ficticias ni fotografías.
+Son 27 fechas: 19 laborables y 8 de fin de semana, antes de configurar feriados adicionales. La cuenta de días calendario a vacaciones es independiente de los turnos pendientes. Las fechas de salida siguen siendo provisionales hasta confirmarlas con la empresa.
 
-## Qué funciona
+## Comportamiento
 
-- Calendario de varios meses, detalles de fecha, árbol colectivo y equipo público.
-- Estado compartido en servidor: SQLite con transacciones `BEGIN IMMEDIATE`, persistencia en disco y reconciliación al consultar. Los navegadores consultan cambios cada 1,3 segundos mientras están visibles.
-- Sorteo con aleatoriedad criptográfica, ciclos equilibrados, asignación única por fecha y conservación al recargar. No repite al compañero anterior, incluso de viernes a lunes.
-- Marcado idempotente, confirmación del turno, reacciones y un adorno derivado de cada fecha completada.
-- Fin de semana y feriados automáticos. El servidor revisa cada 15 segundos, aunque nadie tenga la página abierta. Al reiniciar recupera solo los automáticos vencidos; nunca rellena turnos humanos olvidados.
-- Administración con fechas, resumen previo al guardado, confirmación de archivado, participantes, fotos, pausa, correcciones con motivo y registro de antes/después.
-- Fotos JPG, PNG y WebP: validación real, máximo de 5 MB y 25 millones de píxeles, orientación, recorte cuadrado con enfoque, recodificación sin EXIF y tamaños de 256 y 80 píxeles. Los originales no se guardan. Las imágenes se sirven con firma de 15 minutos.
-- Accesos público y privado de 32 bytes aleatorios. El servidor comprueba hashes, intercambia el fragmento administrativo por una cookie HttpOnly y limpia la dirección. La renovación privada revoca las sesiones anteriores.
-- Protección de origen, límites de solicitudes y conflictos de versión al guardar fechas. No hay claves de servicio en el navegador ni recursos de terceros.
-- Preferencias locales de sonido y movimiento, diálogos nativos con foco, modo sin conexión de lectura y bloqueo de escrituras desconectadas.
+- Sorteo seguro, equilibrado, persistente y sin turnos humanos consecutivos para la misma persona.
+- Confirmación antes de tachar y marcado idempotente. Varias solicitudes simultáneas conservan una única asignación y un único marcado.
+- Sábados, domingos y feriados configurados se completan automáticamente cuando llega su fecha en Santo Domingo. Los laborables olvidados siguen pendientes.
+- Árbol derivado de fechas completadas, reacciones, sonido opcional apagado inicialmente y respeto al movimiento reducido.
+- Administración de nombres, fotos, fechas, pausas, correcciones y enlaces. Los cambios de fecha se revisan antes de guardar y conservan el historial.
+- Fotografías opcionales JPG, PNG o WebP: preparación en el navegador, validación y recodificación en el servidor, recorte cuadrado y tamaños de 256 y 80 píxeles. No se guardan originales ni EXIF. La API admite hasta 5 MB y 8 megapíxeles; la interfaz reduce a 1600 píxeles por lado para enviarlas a Vercel.
+- Los clientes consultan cambios cada 1,3 segundos mientras están visibles y recuperan el estado al reconectar. Sin conexión solo se muestra una copia pública de lectura.
 
-## Persistencia y accesos
+## Datos y seguridad
 
-La carpeta **.data/** contiene la base de datos y el recibo privado **accesos.json** generado para la propietaria. Ese recibo es equivalente a una llave: **no lo compartas**. Se excluye de Git y del contenedor. La base guarda hashes de los accesos; el recibo local permite volver a abrir los enlaces y es el único archivo que conserva sus valores originales.
+`calendar_app`, `calendar_sessions` y `calendar_rate_limits` tienen RLS activado y acceso revocado para `anon` y `authenticated`. Solo el servidor puede operar. Las escrituras comparan la revisión en PostgreSQL para resolver concurrencia sin sobrescribir cambios. El esquema aplicado está en `hosted/schema.sql`.
 
-El navegador usa localStorage únicamente para preferencias, identificador de reacciones y una copia pública de lectura. No es la base de datos del calendario. Los datos administrativos no se guardan en esa copia.
+Las imágenes recodificadas se guardan en el bucket privado `calendar-photos` y se entregan con firmas temporales. La clave de servicio permanece en las variables internas de Supabase. **No se necesita una clave de base de datos en Vercel.** No se incluye ninguna clave en el código o el navegador.
 
-Para recuperar un acceso privado perdido, desde esta carpeta ejecuta:
+Vercel conserva protegidas las URL de despliegue y las vistas previas; el dominio estable de producción permite al equipo entrar mediante su enlace. No hay un directorio público de calendarios ni indexación.
 
-```sh
-npm run recover-admin
-```
+La reconciliación se ejecuta al consultar y diariamente mediante Vercel Cron a las 04:00 UTC, medianoche de Santo Domingo. No completa días humanos ni adelanta fechas.
 
-Después abre ABRIR_ADMIN.cmd. Esto invalida el enlace privado y las sesiones anteriores. Conserva el enlace público existente.
+## Desarrollo y despliegue
 
-## Publicación en un servidor
-
-Esta entrega está funcionando **en local**; no hay un dominio ni un alojamiento de Internet configurado. No se contrataron servicios. La implementación usa Node.js y SQLite en vez de exigir crear PostgreSQL o cuentas externas; el estado compartido sí está en el servidor. El diseño permite una oficina pequeña con **un único servidor y disco persistente**. No ejecutes réplicas con copias independientes del archivo SQLite ni lo alojes en un disco efímero.
-
-Incluye Dockerfile y docker-compose.yml. Configura un dominio y un proxy HTTPS antes de compartir con la oficina:
+Requiere Node.js 24 o superior:
 
 ```sh
-# Configura PUBLIC_ORIGIN en el entorno con tu URL HTTPS exacta.
-docker compose up -d --build
+npm ci
+npm test
+npm run build:vercel
 ```
 
-En docker-compose.yml el servicio escucha solo en 127.0.0.1 del servidor para que un proxy local termine TLS. Usa un volumen persistente, reinicio automático y copias de seguridad. `PUBLIC_ORIGIN` comprueba el origen exacto de las escrituras; una URL HTTPS activa también cookies Secure. No expongas la administración por HTTP en Internet.
+Variables del servidor de Vercel:
 
-Después del primer arranque, el operador entrega el enlace público y el privado a la propietaria mediante un canal privado usando el recibo del volumen. No publiques el recibo, los fragmentos privados ni las rutas de capacidad en logs o analítica. La raíz de producción no enumera calendarios.
+- `CALENDAR_BACKEND_URL`: URL de la función `calendar-api` de Supabase.
+- `PUBLIC_ORIGIN`: URL HTTPS estable del calendario.
 
-Variables: `HOST`, `PORT`, `DATA_DIR`, `PUBLIC_ORIGIN`, `COOKIE_SECURE`. Se leen del entorno del proceso; `.env.example` es una referencia. Para usar un archivo .env en local: `node --env-file=.env server.mjs`.
+La función Supabase usa sus variables integradas `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. Su API verifica las capacidades del calendario y la sesión privada, por lo que no utiliza el login JWT de Supabase para los compañeros.
 
-Para respaldar, detén el servidor y copia la carpeta de datos completa, incluyendo el recibo privado. Para restaurar, reemplaza esa carpeta con el servidor detenido y vuelve a arrancar. El archivo SQLite contiene también las fotos y la auditoría. Mantén las copias privadas.
+`npm run build:supabase` genera `outputs/calendar-edge.mjs`, listo para desplegar como función `calendar-api`. Las fotos usan Photon 0.4.0 y un módulo WASM fijado por versión y SHA-256; se carga solo al procesar la primera foto de una instancia. No envía fotos al CDN del módulo.
 
-## Verificación ejecutada
+La versión local alternativa se abre con `npm start`, `ABRIR_ADMIN.cmd` o `ABRIR_CALENDARIO.cmd` y guarda sus datos en `.data/`. Esa copia local no se sincroniza con la base de Internet. `npm run recover-admin` recupera únicamente la administración local.
 
-`npm test`: **18 pruebas aprobadas**, con reloj inyectado solo en pruebas. Cubren fechas de Santo Domingo, 27 fechas/19 turnos, sorteo equilibrado, viernes/lunes, cero y una persona, persistencia, alta durante un ciclo, pausa, fines de semana, archivado, conflictos, correcciones y reacciones. La API real verifica permisos, CSRF, 20 sorteos y 20 marcaciones simultáneos, procesamiento de fotos y rotación de accesos.
+## Verificación
 
-La revisión con Chromium está en `scripts/qa-browser.mjs` (requiere Playwright disponible aparte). Se comprobó que no hay desbordamiento horizontal a 360, 390, 768, 1024, 1440 y 1920 píxeles. Se probaron alta de compañeros, edición y confirmación de fechas, sorteo y marcado, árbol, dos sesiones de navegador, reacciones, desconexión, reconexión y subida real de foto. Las capturas y el reporte están en `test-results/`.
+Las pruebas cubren fechas de Santo Domingo, futuros bloqueados, ciclos equilibrados, viernes/lunes, altas, pausa, fines de semana, persistencia, archivado, conflictos de revisión, correcciones, reacciones, API con 20 sorteos y 20 marcaciones simultáneos, fotos y rotación. También validan el adaptador de Supabase y las cabeceras del proxy de Vercel.
 
-Pendiente de la puesta en Internet: comprobar HTTPS, backups del alojamiento y dos dispositivos físicos usando el dominio definitivo. No se hizo una auditoría con lector de pantalla real ni una medición de rendimiento en un celular físico. La sincronización de 1,3 segundos es un intervalo de consulta, no una garantía de red.
+La interfaz se revisó a 360, 390, 768, 1024, 1440 y 1920 píxeles, con dos sesiones de navegador, reconexión y fotos. La publicación real se verificó sin cuenta con fecha de servidor del 23 de noviembre, 27 fechas y los dos primeros días automáticos completados. No se añadieron personas ficticias a la base de producción.
 
-Para otro año, crea otra instancia con su propio DATA_DIR; no reinicies destructivamente esta edición. Las ausencias por fecha quedan fuera de esta primera versión, como prevé el plan.
-
-## Archivos
-
-- `server.mjs`: HTTP, accesos, fotos, sesiones y API.
-- `lib/calendar.mjs`: persistencia transaccional y reglas del calendario.
-- `public/`: interfaz original responsive sin dependencias de frontend.
-- `tests/`: pruebas aisladas; no modifican el calendario real.
-- `referencias/YA_CASI/`: plan, prototipo y SVG originales del ZIP, sin cambios.
-
-No se añadió sorpresa diaria, música automática, cuentas ni contraseñas.
-
-## Variante publicada con Sites
-
-El sitio registrado está identificado en `.openai/hosting.json`. `npm run build` crea el Worker de Cloudflare en `dist/server/`, incluye los recursos de interfaz y compila el procesador WASM de fotos. Las migraciones en `drizzle/` crean el estado en D1; las fotos recodificadas se guardan en R2 privado.
-
-`lib/rules.mjs` contiene las mismas reglas de sorteo y fechas que usa la versión local. En D1, cada escritura usa comparación de revisión y reintenta los conflictos para que varios teléfonos conserven una sola asignación. La versión de Internet funciona sin tener encendida esta computadora. Los datos posteriores a la publicación son independientes de la copia local.
-
-Las fotos se reducen en el navegador antes de enviarse, y se vuelven a validar y recodificar en el servidor. La API publicada limita la imagen decodificada a 8 megapíxeles para evitar agotar la memoria; conserva el máximo de 5 MB. Las fotos enviadas desde esta interfaz se preparan a un máximo de 1600 píxeles por lado.
-
-Las variables INITIAL_STATE_JSON e INITIAL_PUBLIC_TOKEN se configuraron como secretos de Sites y solo inicializan una base vacía. No son accesibles desde el cliente ni sustituyen el estado persistido. El acceso administrativo original se valida mediante su hash, incluido en la configuración inicial; no se incluye en el código publicado.
-
-`node scripts/qa-worker.mjs` verifica el Worker con D1 y R2 reales del simulador de Cloudflare, 15 sorteos y 15 marcaciones simultáneas, cookies Secure, rotación y recodificación de JPG, PNG y WebP. La API `/api/tick` solo reconcilia fechas automáticas que ya llegaron; no expone datos ni completa días humanos.
-
-## Publicación preparada para GitHub y Vercel
-
-Se creó el proyecto Supabase `ya-casi-calendario` en `PROYECTOS UNIVERSIDAD`, región `us-east-1`. Identidad pública en `hosted/deployment.json`. La migración remota `calendar_server_storage` ya creó `calendar_app`, `calendar_sessions`, `calendar_rate_limits` y la función interna de límites. Las tablas tienen RLS activado y se revocó el acceso de `anon` y `authenticated`; solo `service_role` puede operar. El bucket `calendar-photos` es privado y admite únicamente WebP recodificado. La revisión de seguridad no encontró avisos de nivel WARN o ERROR; el aviso informativo de RLS sin políticas es esperado en estas tablas de uso exclusivo del servidor.
-
-`npm run build:vercel` compila el mismo controlador del calendario para Node.js y usa Sharp para las fotografías. `hosted/supabase.mjs` conecta el estado mediante la API de Supabase con control de revisión atómico. `vercel.json` configura las rutas y la reconciliación diaria a las 04:00 UTC (00:00 de Santo Domingo). Las consultas al calendario también recuperan fechas automáticas vencidas.
-
-Variables necesarias en Vercel: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (secreto de servidor) y `PUBLIC_ORIGIN` (URL HTTPS definitiva). El archivo `.env.example` no contiene valores reales. Los datos de inicialización se cargan directamente en la base antes de publicar; no se incluyen como archivo en GitHub.
-
-Estado de esta preparación: base y esquema creados; build de Vercel y 21 pruebas aprobados. Aún se necesita autenticar GitHub para crear un repositorio privado y conectar Vercel para desplegar. También está pendiente la autorización explícita para trasladar los accesos locales y abrir el enlace de participación sin cuentas. No se considera publicado en Vercel hasta verificar una URL de producción.
+No se hizo una auditoría con lector de pantalla ni una medición de rendimiento en un celular físico. La sincronización depende de la red y de los servicios. Revisa las políticas de respaldo y los límites de tus cuentas antes de almacenar información que necesite recuperación garantizada.

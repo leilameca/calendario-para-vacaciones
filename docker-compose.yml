@@ -1,0 +1,12 @@
+services:
+  calendario:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3100:3100"
+    environment:
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Configura PUBLIC_ORIGIN con la URL HTTPS definitiva}
+    volumes:
+      - calendario-data:/data
+volumes:
+  calendario-data:
