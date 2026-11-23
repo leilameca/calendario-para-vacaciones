@@ -1,0 +1,11 @@
+.data
+.env
+.env.*
+.git
+outputs
+test-results
+referencias
+node_modules
+dist
+.wrangler
+.sites-runtime

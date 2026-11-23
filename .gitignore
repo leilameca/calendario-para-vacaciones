@@ -1,0 +1,17 @@
+node_modules/
+.data/
+.env
+*.sqlite*
+test-results/
+
+dist/
+.wrangler/
+*.tar.gz
+.sites-checkout/
+.sites-checkout-*/
+.sites-runtime/
+outputs/
+.vercel/
+.vercel-build/
+.env.*
+!.env.example
