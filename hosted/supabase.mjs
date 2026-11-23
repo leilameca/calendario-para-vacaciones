@@ -6,7 +6,9 @@ export function createSupabaseBindings({url,key,fetcher=fetch}){
   async function rest(path,{method='GET',data,headers={}}={}){
     const response=await fetcher(base+'/rest/v1/'+path,{method,headers:{...auth,'Content-Type':'application/json',...headers},body:data===undefined?undefined:JSON.stringify(data),signal:AbortSignal.timeout(15000)});
     if(!response.ok)throw new Error('Supabase database request failed: '+response.status);
-    return response.status===204?null:response.json();
+    if(response.status===204)return null;
+    const text=await response.text();
+    return text.trim()?JSON.parse(text):null;
   }
   const encode=encodeURIComponent;
   class Statement{
