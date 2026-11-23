@@ -84,6 +84,6 @@ async function handle(request,env,ctx){
   return json({error:'Operación no encontrada.'},404);
 }
 export default{
-  async fetch(request,env,ctx){try{return await handle(request,env,ctx);}catch(err){if(!err.status)console.error('calendar_request_failed',{name:err.name});return json({error:err.status?err.message:'No se pudo guardar. Inténtalo de nuevo.'},err.status||500);}},
+  async fetch(request,env,ctx){try{return await handle(request,env,ctx);}catch(err){if(!err.status)console.error('calendar_request_failed',{name:err.name,message:err.message});return json({error:err.status?err.message:'No se pudo guardar. Inténtalo de nuevo.'},err.status||500);}},
   async scheduled(event,env,ctx){const db=env.DB.withSession('first-primary');const rules=createRules();ctx.waitUntil(transaction(db,env,s=>rules.reconcile(s)));}
 };
