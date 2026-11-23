@@ -1,0 +1,14 @@
+{
+  "provider": "supabase",
+  "project_id": "liknplywbiyfsdbrtmoa",
+  "project_name": "ya-casi-calendario",
+  "organization_id": "hcztngacakcxlcymvcaw",
+  "region": "us-east-1",
+  "github_owner": "leilameca",
+  "github_repository": "leilameca/calendario-para-vacaciones",
+  "vercel_project_id": "prj_gHInpQdL1jrBiJcObQ5MfWjoHpjx",
+  "vercel_url": "https://ya-casi-calendario.vercel.app",
+  "vercel_team_id": "team_4K5mpf4QG9bF2UhFnYa15nEa",
+  "vercel_deployment_id": "dpl_8cgWPqdm7efmDq8NZfW3tptiFFxq",
+  "status": "protected_deployment_pending_database_secret_and_consent"
+}
