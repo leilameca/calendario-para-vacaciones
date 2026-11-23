@@ -4,6 +4,18 @@ import {createSupabaseBindings} from '../hosted/supabase.mjs';
 import {processPhoto} from '../hosted/images.mjs';
 import sharp from 'sharp';
 
+test('Supabase permite iniciar sesión cuando un INSERT correcto devuelve 201 sin cuerpo',async()=>{
+  const writes=[];
+  const {DB}=createSupabaseBindings({url:'https://example.supabase.co',key:'test-server-secret',fetcher:async(url,options)=>{
+    writes.push({url,options});return new Response(null,{status:201});
+  }});
+  const result=await DB.prepare('INSERT INTO sessions(hash,generation,expires) VALUES(?,?,?)').bind('session-hash',1,Date.now()+43200000).run();
+  assert.equal(result.meta.changes,1);
+  assert.match(writes[0].url,/calendar_sessions$/);
+  assert.equal(JSON.parse(writes[0].options.body).hash,'session-hash');
+  await DB.prepare('INSERT OR IGNORE INTO app(id,body,revision) VALUES(1,?,1)').bind('{"version":1}').run();
+});
+
 test('Supabase rechaza escrituras obsoletas y conserva la revisión ganadora',async()=>{
   let row={body:'original',revision:1};
   const calls=[];
